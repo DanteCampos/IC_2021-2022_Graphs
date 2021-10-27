@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Print the adjacency matrix M with V vertices
 void printAdjMat (int * M, int V){
 	int i, j;
 	
@@ -15,6 +16,9 @@ void printAdjMat (int * M, int V){
 	return;	
 }
 
+
+// Calculates the cartesian product G x H of the
+// adjacency matrices G and H with VG and VH vertices, respectively
 int* cartProd (int* G, int *H, int VG, int VH){
 	int VP = VG*VH;
 	int i, j, m, line, column;
