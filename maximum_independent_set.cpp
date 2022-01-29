@@ -5,17 +5,9 @@
 #include <algorithm>
 
 //Global variables
-int mat[8][8] = {
-	{0, 1, 1, 0, 0, 0, 0, 0},
-	{1, 0, 0, 0, 0, 0, 0, 0},
-	{1, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 1, 1, 0, 0},
-	{0, 0, 0, 1, 0, 1, 1, 1},
-	{0, 0, 0, 1, 1, 0, 0, 1},
-	{0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 1, 1, 0, 0} };
+int mat[100][100];
 
-int N_vertices = 8;
+int N_vertices;
 
 // Declarations
 int find(std::vector<int>& parent, int i);
@@ -402,16 +394,29 @@ std::set<int> MIS(std::set<int> X) {
 	return bigst_set(MIS(set_M(X, {u})), set_U({u}, MIS(set_M(X, N_C(u, X)))));
 }
 
+// Input the number of vertices and adjacency matrix
+// Prints the maximum independent set
 int main() {
-	std::set<int> X;
+	std::cin >> N_vertices;
 
+	for (int i = 0; i < N_vertices; i++)
+		for (int j = 0; j < N_vertices; j++)
+			std::cin >> mat[i][j];
+
+	// Building the set of vertices
+	std::set<int> X;
 	for (int i = 0; i < N_vertices; i++)
 		X.insert(i);
 
 	std::set<int> max_set = MIS(X);
 	
-	for (auto& it : max_set)
-		std::cout << it << ' ';
+	// Printing the maximum independent set
+	std::cout << "Maximum Independent Set = {";
+	for (auto it = max_set.begin(); it != std::prev(max_set.end()); it++)
+		std::cout << *it << ", ";
+	if (!max_set.empty())
+		std::cout << *(max_set.rbegin());
+	std::cout << "}\n";
 
 	return 0;
 }
