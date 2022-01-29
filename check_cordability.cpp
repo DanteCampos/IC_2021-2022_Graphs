@@ -23,6 +23,9 @@ int N_vertices;
 // Declarations
 bool edge(int i, int j);
 bool cmp_second(std::pair<int, int> a, std::pair<int, int> b);
+int find(std::vector<int>& parent, int i);
+void unite(std::vector<int>& parent, int x, int y);
+std::vector<std::set<int>> connected_components(std::set<int> vertices);
 order max_card_search();
 bool zero_fill_in(order ord);
 
@@ -39,6 +42,59 @@ bool cmp_second(std::pair<int, int> a, std::pair<int, int> b) {
 	return a.second < b.second;
 }
 
+// Implementation of union-find algorithm
+
+// Find function:
+int find(std::vector <int>& parent, int i) {
+	if (parent[i] == i)
+		return i;
+	return find(parent, parent[i]);
+}
+
+// Union function:
+void unite(std::vector <int>& parent, int x, int y) {
+	int xset = find(parent, x);
+	int yset = find(parent, y);
+	parent[yset] = xset;
+}
+
+// Returns a vector of sets
+// Each set has all the vertices in the same component
+// There is no path connecting vertices from different sets
+// using only the vertices in "vertices" set
+std::vector<std::set<int>> connected_components(std::set<int> vertices) {
+	int size = vertices.size();
+	std::vector <int> parent;
+	std::vector <std::set<int>> components;
+	std::vector <std::set<int>> result;
+	parent.resize(size);
+	components.resize(size);
+
+	// Using union-find to identify the components
+	for (int i = 0; i < size; i++)
+		parent[i] = i;
+
+	for (auto i = vertices.begin(); i != vertices.end(); i++) {
+		for (auto j = i; j != vertices.end(); j++) {
+			if (edge(*i, *j)) {
+				unite(parent, distance(vertices.begin(), i), distance(vertices.begin(), j));
+			}
+		}
+	}
+
+	// Making a vector of sets with the vertices in each component
+	for (auto i = vertices.begin(); i != vertices.end(); i++) {
+		components[find(parent, distance(vertices.begin(), i))].insert(*i);
+	}
+
+	// Excluding empty sets
+	for (auto i = components.begin(); i != components.end(); i++) {
+		if (!(*i).empty())
+			result.push_back(*i);
+	}
+
+	return result;
+}
 
 // Orders the vertices of a graph by maximum cardinality search
 order max_card_search() {
@@ -153,6 +209,7 @@ bool zero_fill_in(order ord){
 }
 
 // Input the number of vertices and adjacency matrix
+// The graph must be connected
 // Prints if graph is chordal or not
 int main() {
 
@@ -161,6 +218,16 @@ int main() {
 	for (int i = 0; i < N_vertices; i++)
 		for (int j = 0; j < N_vertices; j++)
 			std::cin >> mat[i][j];
+
+	std::set<int> X;
+	for (int i = 0; i < N_vertices; i++)
+		X.insert(i);
+
+
+	if (connected_components(X).size() != 1) {
+		std::cout << "The graph is not connected!\n";
+		return 0;
+	}
 
 	if (zero_fill_in(max_card_search()))
 		std::cout << "The graph is chordal\n";
