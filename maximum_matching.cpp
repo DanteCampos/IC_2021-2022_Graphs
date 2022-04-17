@@ -7,7 +7,6 @@
 #include <vector>
 
 using namespace std;
-int M = 500; // max number of vertices
 
 struct StructEdge {
     int v;
